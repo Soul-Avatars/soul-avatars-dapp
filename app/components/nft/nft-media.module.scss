@@ -1,0 +1,56 @@
+.nft-card {
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+  margin: 0 24px 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  height: 240px;
+}
+
+.nft-image {
+  height: 100%;
+  border-radius: 8px 0 0 8px;
+}
+
+.nft-card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin: 16px;
+  height: calc(100% - 32px);
+}
+
+.nft-attributes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nft-attribute {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: bold;
+  background-color: #f0f0f0;
+  padding: 4px 8px;
+  border-radius: 16px;
+}
+
+.nft-attribute-label {
+  margin-right: 8px;
+  color: #777;
+}
+
+.nft-attribute-value {
+  color: #333;
+}
+
+.nft-chat-button {
+  width: 180px;
+  padding: 8px 24px;
+  border-radius: 16px;
+  box-shadow: none;
+}

@@ -14,6 +14,7 @@ import Locale from "../locales";
 import { useAppConfig, useChatStore } from "../store";
 import { MaskAvatar } from "./mask";
 import { useCommand } from "../command";
+import { NFTMedia } from "./nft/nft-media";
 
 function getIntersectionArea(aRect: DOMRect, bRect: DOMRect) {
   const xmin = Math.max(aRect.x, bRect.x);
@@ -122,30 +123,6 @@ export function NewChat() {
           text={Locale.NewChat.Return}
           onClick={() => navigate(Path.Home)}
         ></IconButton>
-        {!state?.fromHome && (
-          <IconButton
-            text={Locale.NewChat.NotShow}
-            onClick={() => {
-              if (confirm(Locale.NewChat.ConfirmNoShow)) {
-                startChat();
-                config.update(
-                  (config) => (config.dontShowMaskSplashScreen = true),
-                );
-              }
-            }}
-          ></IconButton>
-        )}
-      </div>
-      <div className={styles["mask-cards"]}>
-        <div className={styles["mask-card"]}>
-          <EmojiAvatar avatar="1f606" size={24} />
-        </div>
-        <div className={styles["mask-card"]}>
-          <EmojiAvatar avatar="1f916" size={24} />
-        </div>
-        <div className={styles["mask-card"]}>
-          <EmojiAvatar avatar="1f479" size={24} />
-        </div>
       </div>
 
       <div className={styles["title"]}>{Locale.NewChat.Title}</div>
@@ -159,18 +136,11 @@ export function NewChat() {
           bordered
           shadow
         />
-
-        <IconButton
-          text={Locale.NewChat.Skip}
-          onClick={() => startChat()}
-          icon={<LightningIcon />}
-          type="primary"
-          shadow
-          className={styles["skip"]}
-        />
       </div>
 
-      <div className={styles["masks"]} ref={maskRef}>
+      <NFTMedia />
+
+      {/* <div className={styles["masks"]} ref={maskRef}>
         {groups.map((masks, i) => (
           <div key={i} className={styles["mask-row"]}>
             {masks.map((mask, index) => (
@@ -182,7 +152,7 @@ export function NewChat() {
             ))}
           </div>
         ))}
-      </div>
+      </div> */}
     </div>
   );
 }

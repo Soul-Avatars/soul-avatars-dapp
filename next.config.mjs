@@ -13,6 +13,7 @@ const nextConfig = {
   },
   output: mode,
   images: {
+    domains: ["ipfs.io"],
     unoptimized: mode === "export",
   },
 };

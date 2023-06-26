@@ -1,4 +1,3 @@
-import * as React from "react";
 import { ConnectWallet } from "@thirdweb-dev/react";
 
 import styles from "./auth-button.module.scss";
