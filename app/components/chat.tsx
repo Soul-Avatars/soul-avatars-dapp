@@ -6,16 +6,13 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
+import { useAddress } from "@thirdweb-dev/react";
 
 import SendWhiteIcon from "../icons/send-white.svg";
 import BrainIcon from "../icons/brain.svg";
-import RenameIcon from "../icons/rename.svg";
-import ExportIcon from "../icons/share.svg";
 import ReturnIcon from "../icons/return.svg";
 import CopyIcon from "../icons/copy.svg";
 import LoadingIcon from "../icons/three-dots.svg";
-import PromptIcon from "../icons/prompt.svg";
-import MaskIcon from "../icons/mask.svg";
 import MaxIcon from "../icons/max.svg";
 import MinIcon from "../icons/min.svg";
 import ResetIcon from "../icons/reload.svg";
@@ -27,7 +24,6 @@ import DarkIcon from "../icons/dark.svg";
 import AutoIcon from "../icons/auto.svg";
 import BottomIcon from "../icons/bottom.svg";
 import StopIcon from "../icons/pause.svg";
-import RobotIcon from "../icons/robot.svg";
 
 import {
   ChatMessage,
@@ -386,19 +382,6 @@ export function ChatActions(props: {
   const couldStop = ChatControllerPool.hasPending();
   const stopAll = () => ChatControllerPool.stopAll();
 
-  // switch model
-  const currentModel = chatStore.currentSession().mask.modelConfig.model;
-  function nextModel() {
-    const models = ALL_MODELS.filter((m) => m.available).map((m) => m.name);
-    const modelIndex = models.indexOf(currentModel);
-    const nextIndex = (modelIndex + 1) % models.length;
-    const nextModel = models[nextIndex];
-    chatStore.updateCurrentSession((session) => {
-      session.mask.modelConfig.model = nextModel;
-      session.mask.syncGlobalConfig = false;
-    });
-  }
-
   return (
     <div className={chatStyle["chat-input-actions"]}>
       {couldStop && (
@@ -440,20 +423,6 @@ export function ChatActions(props: {
       />
 
       <ChatAction
-        onClick={props.showPromptHints}
-        text={Locale.Chat.InputActions.Prompt}
-        icon={<PromptIcon />}
-      />
-
-      <ChatAction
-        onClick={() => {
-          navigate(Path.Masks);
-        }}
-        text={Locale.Chat.InputActions.Masks}
-        icon={<MaskIcon />}
-      />
-
-      <ChatAction
         text={Locale.Chat.InputActions.Clear}
         icon={<BreakIcon />}
         onClick={() => {
@@ -467,18 +436,14 @@ export function ChatActions(props: {
           });
         }}
       />
-
-      <ChatAction
-        onClick={nextModel}
-        text={currentModel}
-        icon={<RobotIcon />}
-      />
     </div>
   );
 }
 
 export function Chat() {
   type RenderMessage = ChatMessage & { preview?: boolean };
+
+  const address = useAddress();
 
   const chatStore = useChatStore();
   const [session, sessionIndex] = useChatStore((state) => [
@@ -775,6 +740,14 @@ export function Chat() {
     },
   });
 
+  if (!address) {
+    return (
+      <div className={chatStyle["chat-not-connect"]}>
+        Sign In with wallet to start chatting
+      </div>
+    );
+  }
+
   return (
     <div className={styles.chat} key={session.id}>
       <div className="window-header" data-tauri-drag-region>
@@ -784,9 +757,6 @@ export function Chat() {
             onClickCapture={renameSession}
           >
             {!session.topic ? DEFAULT_TOPIC : session.topic}
-          </div>
-          <div className="window-header-sub-title">
-            {Locale.Chat.SubTitle(session.messages.length)}
           </div>
         </div>
         <div className="window-actions">
@@ -798,23 +768,13 @@ export function Chat() {
               onClick={() => navigate(Path.Home)}
             />
           </div>
-          <div className="window-action-button">
+          {/* <div className="window-action-button">
             <IconButton
               icon={<RenameIcon />}
               bordered
               onClick={renameSession}
             />
-          </div>
-          <div className="window-action-button">
-            <IconButton
-              icon={<ExportIcon />}
-              bordered
-              title={Locale.Chat.Actions.Export}
-              onClick={() => {
-                setShowExport(true);
-              }}
-            />
-          </div>
+          </div> */}
           {showMaxIcon && (
             <div className="window-action-button">
               <IconButton

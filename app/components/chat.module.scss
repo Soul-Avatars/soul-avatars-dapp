@@ -1,5 +1,13 @@
 @import "../styles/animation.scss";
 
+.chat-not-connect {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+}
+
 .chat-input-actions {
   display: flex;
   flex-wrap: wrap;

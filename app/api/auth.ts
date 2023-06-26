@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { utils } from "ethers";
 import { getServerSideConfig } from "../config/server";
 import md5 from "spark-md5";
 import { ACCESS_CODE_PREFIX } from "../constant";
@@ -30,21 +31,29 @@ export function auth(req: NextRequest) {
   // check if it is openai api key or user token
   const { accessCode, apiKey: token } = parseApiKey(authToken);
 
-  const hashedCode = md5.hash(accessCode ?? "").trim();
-
-  const serverConfig = getServerSideConfig();
-  console.log("[Auth] allowed hashed codes: ", [...serverConfig.codes]);
-  console.log("[Auth] got access code:", accessCode);
-  console.log("[Auth] hashed access code:", hashedCode);
-  console.log("[User IP] ", getIP(req));
-  console.log("[Time] ", new Date().toLocaleString());
-
-  if (serverConfig.needCode && !serverConfig.codes.has(hashedCode) && !token) {
+  // check if access code is an valid address
+  if (!utils.isAddress(accessCode)) {
     return {
       error: true,
-      msg: !accessCode ? "empty access code" : "wrong access code",
+      msg: "wallet not connected",
     };
   }
+
+  // const hashedCode = md5.hash(accessCode ?? "").trim();
+
+  const serverConfig = getServerSideConfig();
+  // console.log("[Auth] allowed hashed codes: ", [...serverConfig.codes]);
+  // console.log("[Auth] got access code:", accessCode);
+  // console.log("[Auth] hashed access code:", hashedCode);
+  // console.log("[User IP] ", getIP(req));
+  // console.log("[Time] ", new Date().toLocaleString());
+
+  // if (serverConfig.needCode && !serverConfig.codes.has(hashedCode) && !token) {
+  //   return {
+  //     error: true,
+  //     msg: !accessCode ? "empty access code" : "wrong access code",
+  //   };
+  // }
 
   // if user does not provide an api key, inject system api key
   if (!token) {
