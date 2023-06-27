@@ -19,8 +19,6 @@ import ResetIcon from "../icons/reload.svg";
 import RenameIcon from "../icons/rename.svg";
 import BreakIcon from "../icons/break.svg";
 import SettingsIcon from "../icons/chat-settings.svg";
-import DeleteIcon from "../icons/clear.svg";
-import PinIcon from "../icons/pin.svg";
 
 import LightIcon from "../icons/light.svg";
 import DarkIcon from "../icons/dark.svg";
@@ -32,22 +30,14 @@ import {
   ChatMessage,
   SubmitKey,
   useChatStore,
-  BOT_HELLO,
   createMessage,
   useAccessStore,
   Theme,
   useAppConfig,
   DEFAULT_TOPIC,
-  ALL_MODELS,
 } from "../store";
 
-import {
-  copyToClipboard,
-  downloadAs,
-  selectOrCopy,
-  autoGrowTextArea,
-  useMobileScreen,
-} from "../utils";
+import { selectOrCopy, autoGrowTextArea, useMobileScreen } from "../utils";
 
 import dynamic from "next/dynamic";
 
@@ -527,20 +517,6 @@ export function Chat() {
   const SEARCH_TEXT_LIMIT = 30;
   const onInput = (text: string) => {
     setUserInput(text);
-    const n = text.trim().length;
-
-    // clear search results
-    if (n === 0) {
-      setPromptHints([]);
-    } else if (text.startsWith(ChatCommandPrefix)) {
-      setPromptHints(chatCommands.search(text));
-    } else if (!config.disablePromptHint && n < SEARCH_TEXT_LIMIT) {
-      // check if need to trigger auto completion
-      if (text.startsWith("/")) {
-        let searchText = text.slice(1);
-        onSearch(searchText);
-      }
-    }
   };
 
   const doSubmit = (userInput: string) => {
@@ -685,19 +661,6 @@ export function Chat() {
     ? []
     : session.mask.context.slice();
 
-  const accessStore = useAccessStore();
-
-  if (
-    context.length === 0 &&
-    session.messages.at(0)?.content !== BOT_HELLO.content
-  ) {
-    const copiedHello = Object.assign({}, BOT_HELLO);
-    if (!accessStore.isAuthorized()) {
-      copiedHello.content = Locale.Error.Unauthorized;
-    }
-    context.push(copiedHello);
-  }
-
   // clear context index = context length + index in messages
   const clearContextIndex =
     (session.clearContextIndex ?? -1) >= 0
@@ -800,16 +763,6 @@ export function Chat() {
               />
             </div>
           )}
-          {/* <div className="window-action-button">
-            <IconButton
-              icon={<ExportIcon />}
-              bordered
-              title={Locale.Chat.Actions.Export}
-              onClick={() => {
-                setShowExport(true);
-              }}
-            />
-          </div> */}
           {showMaxIcon && (
             <div className="window-action-button">
               <IconButton
@@ -845,10 +798,6 @@ export function Chat() {
       >
         {messages.map((message, i) => {
           const isUser = message.role === "user";
-          const showActions =
-            !isUser &&
-            i > 0 &&
-            !(message.preview || message.content.length === 0);
           const showTyping = message.preview || message.streaming;
 
           const shouldShowClearContextDivider = i === clearContextIndex - 1;
@@ -890,55 +839,6 @@ export function Chat() {
                       parentRef={scrollRef}
                       defaultShow={i >= messages.length - 10}
                     />
-
-                    {showActions && (
-                      <div className={styles["chat-message-actions"]}>
-                        <div
-                          className={styles["chat-input-actions"]}
-                          style={{
-                            marginTop: 10,
-                            marginBottom: 0,
-                          }}
-                        >
-                          {message.streaming ? (
-                            <ChatAction
-                              text={Locale.Chat.Actions.Stop}
-                              icon={<StopIcon />}
-                              onClick={() => onUserStop(message.id ?? i)}
-                            />
-                          ) : (
-                            <>
-                              <ChatAction
-                                text={Locale.Chat.Actions.Delete}
-                                icon={<DeleteIcon />}
-                                onClick={() => onDelete(message.id ?? i)}
-                              />
-
-                              <ChatAction
-                                text={Locale.Chat.Actions.Retry}
-                                icon={<ResetIcon />}
-                                onClick={() => onResend(message.id ?? i)}
-                              />
-
-                              <ChatAction
-                                text={Locale.Chat.Actions.Pin}
-                                icon={<PinIcon />}
-                                onClick={() => onPinMessage(message)}
-                              />
-                            </>
-                          )}
-                          <ChatAction
-                            text={Locale.Chat.Actions.Copy}
-                            icon={<CopyIcon />}
-                            onClick={() => copyToClipboard(message.content)}
-                          />
-                        </div>
-
-                        <div className={styles["chat-message-action-date"]}>
-                          {message.date.toLocaleString()}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -951,22 +851,6 @@ export function Chat() {
       <div className={styles["chat-input-panel"]}>
         <PromptHints prompts={promptHints} onPromptSelect={onPromptSelect} />
 
-        <ChatActions
-          showPromptModal={() => setShowPromptModal(true)}
-          scrollToBottom={scrollToBottom}
-          hitBottom={hitBottom}
-          showPromptHints={() => {
-            // Click again to close
-            if (promptHints.length > 0) {
-              setPromptHints([]);
-              return;
-            }
-
-            inputRef.current?.focus();
-            setUserInput("/");
-            onSearch("");
-          }}
-        />
         <div className={styles["chat-input-panel-inner"]}>
           <textarea
             ref={inputRef}
