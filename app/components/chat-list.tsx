@@ -1,5 +1,4 @@
 import DeleteIcon from "../icons/delete.svg";
-import BotIcon from "../icons/bot.svg";
 
 import styles from "./home.module.scss";
 import {
@@ -12,7 +11,7 @@ import {
 import { useChatStore } from "../store";
 
 import Locale from "../locales";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Path } from "../constant";
 import { MaskAvatar } from "./mask";
 import { Mask } from "../store/mask";
@@ -66,15 +65,26 @@ export function ChatItem(props: {
               </div>
             </div>
           ) : (
-            <>
-              <div className={styles["chat-item-title"]}>{props.title}</div>
-              <div className={styles["chat-item-info"]}>
-                <div className={styles["chat-item-count"]}>
-                  {Locale.ChatItem.ChatItemCount(props.count)}
+            <div style={{ display: "flex", flexDirection: "row" }}>
+              <img
+                src={props.mask.avatar}
+                alt={props.title}
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 8,
+                  marginRight: 16,
+                }}
+              />
+              <div style={{ flex: 1 }}>
+                <div className={styles["chat-item-title"]}>{props.title}</div>
+                <div className={styles["chat-item-info"]}>
+                  <div className={styles["chat-item-count"]}>
+                    {Locale.ChatItem.ChatItemCount(props.count)}
+                  </div>
                 </div>
-                <div className={styles["chat-item-date"]}>{props.time}</div>
               </div>
-            </>
+            </div>
           )}
 
           <div
@@ -140,7 +150,7 @@ export function ChatList(props: { narrow?: boolean }) {
                   selectSession(i);
                 }}
                 onDelete={() => {
-                  if (!props.narrow || confirm(Locale.Home.DeleteChat)) {
+                  if (confirm(Locale.Home.DeleteChat)) {
                     chatStore.deleteSession(i);
                   }
                 }}

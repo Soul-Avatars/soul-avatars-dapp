@@ -131,7 +131,12 @@ export function NewChat() {
       <div className={styles["actions"]}>
         <IconButton
           text={Locale.NewChat.More}
-          onClick={() => navigate(Path.Masks)}
+          onClick={() =>
+            window.open(
+              "https://testnets.opensea.io/collection/aigirl-3",
+              "_blank",
+            )
+          }
           icon={<EyeIcon />}
           bordered
           shadow

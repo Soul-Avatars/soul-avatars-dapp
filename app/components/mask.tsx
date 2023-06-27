@@ -29,10 +29,17 @@ import { FileName, Path } from "../constant";
 import { BUILTIN_MASK_STORE } from "../masks";
 
 export function MaskAvatar(props: { mask: Mask }) {
-  return props.mask.avatar !== DEFAULT_MASK_AVATAR ? (
-    <Avatar avatar={props.mask.avatar} />
-  ) : (
-    <Avatar model={props.mask.modelConfig.model} />
+  return (
+    <img
+      src={props.mask.avatar}
+      alt={props.mask.name}
+      style={{
+        width: 48,
+        height: 48,
+        borderRadius: 8,
+        marginRight: 16,
+      }}
+    />
   );
 }
 

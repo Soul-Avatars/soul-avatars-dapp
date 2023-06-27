@@ -20,7 +20,23 @@
   align-items: flex-end;
   justify-content: space-between;
   margin: 16px;
-  height: calc(100% - 32px);
+}
+
+.nft-card-right-mobile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin: 16px;
+
+  .nft-chat-button {
+    margin-top: 8px;
+  }
+}
+
+.nft-attributes-container {
+  height: 160px;
+  overflow: auto;
 }
 
 .nft-attributes {
@@ -32,7 +48,7 @@
 .nft-attribute {
   display: flex;
   align-items: center;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: bold;
   background-color: #f0f0f0;
   padding: 4px 8px;

@@ -16,6 +16,8 @@ import { api, RequestMessage } from "../client/api";
 import { ChatControllerPool } from "../client/controller";
 import { prettyObject } from "../utils/format";
 import { estimateTokenLength } from "../utils/token";
+import { generateNFTMask } from "../masks/nft";
+import { NFT } from "../typing";
 
 export type ChatMessage = RequestMessage & {
   date: string;
@@ -64,7 +66,7 @@ export const BOT_HELLO: ChatMessage = createMessage({
 function createEmptySession(): ChatSession {
   return {
     id: Date.now() + Math.random(),
-    topic: DEFAULT_TOPIC,
+    topic: "Ling",
     memoryPrompt: "",
     messages: [],
     stat: {
@@ -75,7 +77,16 @@ function createEmptySession(): ChatSession {
     lastUpdate: Date.now(),
     lastSummarizeIndex: 0,
 
-    mask: createEmptyMask(),
+    mask: generateNFTMask(
+      0,
+      {
+        id: 1,
+        name: "Ling",
+        metadata:
+          '{"img":"/logo.jpeg","attributes":[{"trait_type":"Role","value":"Customer Service of SoulAvatars"},{"trait_type":"Personality","value":"Friendly"},{"trait_type":"Clothing","value":"Maid Outfit"},{"trait_type":"Hobbies","value":"Dancing"}]}',
+      } as NFT,
+      1,
+    ),
   };
 }
 
