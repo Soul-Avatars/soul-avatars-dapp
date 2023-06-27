@@ -5,43 +5,41 @@ import styles from "./nft-media.module.scss";
 import { IconButton } from "../button";
 import ChatIcon from "../../icons/chat.svg";
 import { Path } from "../../constant";
-import { Mask } from "../../store/mask";
+import { useMaskStore } from "../../store/mask";
 import { useNavigate } from "react-router-dom";
 import { useChatStore } from "../../store";
-
-interface NFT {
-  tokenAddress: string;
-  tokenId: string;
-  amount: string;
-  ownerOf: string;
-  tokenHash: string;
-  blockNumberMinted: string;
-  blockNumber: string;
-  contractType: string;
-  name: string;
-  symbol: string;
-  metadata: string;
-  minterAddress: string;
-}
+import { generateNFTMask } from "../../masks/nft";
+import { NFT } from "@/app/typing";
 
 export const NFTMedia = () => {
   const [nfts, setNfts] = useState<NFT[] | undefined>(undefined);
   const chatStore = useChatStore();
+  const maskStore = useMaskStore();
   const navigate = useNavigate();
 
-  const startChat = (mask?: Mask) => {
-    chatStore.newSession(mask);
+  const startChat = (id: string) => {
+    const nftMask = maskStore.getAll().find((e) => e.avatar === id);
+    chatStore.newSession(nftMask || undefined);
     setTimeout(() => navigate(Path.Chat), 1);
   };
 
   useEffect(() => {
+    if (nfts) return;
+
     async function fetchNfts() {
       const response = await fetch(`/api/nft`);
       const data = await response.json();
       setNfts(data.owners);
+      maskStore.getAll().forEach((mask) => {
+        maskStore.delete(mask.id);
+      });
+      data.owners.forEach((e: any, i: number) => {
+        const nftMask = generateNFTMask(i, e);
+        maskStore.create(nftMask);
+      });
     }
     fetchNfts();
-  }, []);
+  }, [maskStore, nfts]);
 
   const address = useAddress();
   return (
@@ -49,10 +47,10 @@ export const NFTMedia = () => {
       {nfts &&
         nfts
           .filter((e) => e.ownerOf.toLowerCase() === address?.toLowerCase())
-          .map((nft, i) => {
+          .map((nft) => {
             const { img, attributes } = JSON.parse(nft.metadata);
             return (
-              <div className={styles["nft-card"]} key={i}>
+              <div className={styles["nft-card"]} key={img}>
                 <Image
                   src={img}
                   alt="NFT"
@@ -76,7 +74,7 @@ export const NFTMedia = () => {
                   <IconButton
                     icon={<ChatIcon />}
                     text="Chat"
-                    onClick={() => startChat()}
+                    onClick={() => startChat(img)}
                   />
                 </div>
               </div>
