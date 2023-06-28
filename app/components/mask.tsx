@@ -27,20 +27,10 @@ import { Updater } from "../typing";
 import { ModelConfigList } from "./model-config";
 import { FileName, Path } from "../constant";
 import { BUILTIN_MASK_STORE } from "../masks";
+import { BotChatAvatar } from "./chat-list";
 
 export function MaskAvatar(props: { mask: Mask }) {
-  return (
-    <img
-      src={props.mask.avatar}
-      alt={props.mask.name}
-      style={{
-        width: 48,
-        height: 48,
-        borderRadius: 8,
-        marginRight: 16,
-      }}
-    />
-  );
+  return <BotChatAvatar img={props.mask.avatar} alt={props.mask.name} />;
 }
 
 export function MaskConfig(props: {

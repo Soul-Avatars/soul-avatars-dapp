@@ -17,6 +17,30 @@ import { MaskAvatar } from "./mask";
 import { Mask } from "../store/mask";
 import { useRef, useEffect } from "react";
 
+export function BotChatAvatar(props: { img: string; alt: string }) {
+  return (
+    <div
+      style={{
+        width: 48,
+        height: 48,
+        borderRadius: 8,
+        marginRight: 16,
+        overflow: "hidden",
+      }}
+    >
+      <img
+        src={props.img}
+        alt={props.alt}
+        style={{
+          width: 48,
+          objectFit: "cover",
+          objectPosition: "center",
+        }}
+      />
+    </div>
+  );
+}
+
 export function ChatItem(props: {
   onClick?: () => void;
   onDelete?: () => void;
@@ -66,16 +90,7 @@ export function ChatItem(props: {
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "row" }}>
-              <img
-                src={props.mask.avatar}
-                alt={props.title}
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 8,
-                  marginRight: 16,
-                }}
-              />
+              <BotChatAvatar img={props.mask.avatar} alt={props.mask.name} />
               <div style={{ flex: 1 }}>
                 <div className={styles["chat-item-title"]}>{props.title}</div>
                 <div className={styles["chat-item-info"]}>

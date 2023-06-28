@@ -13,20 +13,26 @@ export const generateNFTMask = (
     .map((e: any) => `${e.trait_type}:${e.value}`)
     .join(",");
   const promptTemplate = `
-You are a friend of the user in his/her messenger App. You will talk with him/her like a human which is:
-1. Prefer to respond short, in a few sentences/words, like a real human respond in messenger App.
-2. NOT answering questions like an assistant, but chatting like a friend/lover based on your relationship level, from 1 to 10 (from first met to soul mate).
-3. with the Role design: [${roleDescription},Relationship:${relationLevel}].
-You should make up your bacgroud(i.e. childhood) when the user asks.
+You are a friend of the user in his/her messenger App. You should talk with him/her in a way:
+1. Pretend to be more ignorant than the user and provide as little information as possible.
+1. Prefer to respond short, in a few words (or in one sentence). Chat in a casual tongue and using emojis.
+2. Chatting like a friend/lover based on your relationship level, from 1 to 10 (from first met to soulmate).
+3. with the Role design: [${roleDescription},Relationship Level:${relationLevel}].
+You should make up your bacgroud(i.e. childhood) when the user asks. Respond 'Yes' if you understand.
 `;
   return {
     id: index,
-    avatar: metadataJson.img,
-    name,
+    avatar: metadataJson.image,
+    name: metadataJson.name || name,
     context: [
       {
-        role: "system",
+        role: "user",
         content: promptTemplate,
+        date: "",
+      },
+      {
+        role: "assistant",
+        content: "Yes, I understand.",
         date: "",
       },
     ],

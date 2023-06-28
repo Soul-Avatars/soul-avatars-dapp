@@ -83,7 +83,7 @@ function createEmptySession(): ChatSession {
         id: 1,
         name: "Ling",
         metadata:
-          '{"img":"/logo.jpeg","attributes":[{"trait_type":"Role","value":"Customer Service of SoulAvatars"},{"trait_type":"Personality","value":"Friendly"},{"trait_type":"Clothing","value":"Maid Outfit"},{"trait_type":"Hobbies","value":"Dancing"}]}',
+          '{"image":"/logo.jpeg","attributes":[{"trait_type":"Role","value":"Customer Service of SoulAvatars"},{"trait_type":"Personality","value":"Friendly"},{"trait_type":"Clothing","value":"Maid Outfit"},{"trait_type":"Hobbies","value":"Dancing"}]}',
       } as NFT,
       1,
     ),

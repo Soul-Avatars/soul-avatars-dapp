@@ -11,9 +11,69 @@ import { useChatStore } from "../../store";
 import { generateNFTMask } from "../../masks/nft";
 import { NFT } from "@/app/typing";
 import { useMobileScreen } from "@/app/utils";
+import { Modal } from "../ui-lib";
+
+function NftModal(props: {
+  modalType: number;
+  isMobileScreen: boolean;
+  nft: Record<string, any>;
+  onClose: () => void;
+}) {
+  return (
+    <div className="modal-mask">
+      <Modal title={""} onClose={() => props.onClose()}>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <img
+            src={props.nft.image}
+            alt="NFT"
+            width={props.isMobileScreen ? "100%" : "400px"}
+            height={"auto"}
+            hidden={props.isMobileScreen && props.modalType === 2}
+          />
+          <div
+            className={
+              props.isMobileScreen
+                ? styles["nft-card-right-mobile"]
+                : styles["nft-card-right"]
+            }
+            style={{
+              display:
+                props.isMobileScreen && props.modalType === 1 ? "none" : "flex",
+            }}
+          >
+            <div
+              className={styles["nft-attributes-container"]}
+              style={{ height: "auto" }}
+            >
+              <div className={styles["nft-name"]}>{props.nft.name}</div>
+              <div style={{ marginBottom: "16px" }}>
+                {props.nft.description}
+              </div>
+              <div className={styles["nft-attributes"]}>
+                {props.nft.attributes.map((attribute: any, index: number) => (
+                  <div key={index} className={styles["nft-attribute"]}>
+                    <span className={styles["nft-attribute-label"]}>
+                      {attribute.trait_type}:
+                    </span>
+                    <span className={styles["nft-attribute-value"]}>
+                      {attribute.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </Modal>
+    </div>
+  );
+}
 
 export const NFTMedia = () => {
   const [nfts, setNfts] = useState<NFT[] | undefined>(undefined);
+  const [modalType, setModalType] = useState<number>(1); // 1: show left, 2: show right.
+  const [modalNFT, setModalNFT] = useState<Record<string, any> | undefined>();
+
   const chatStore = useChatStore();
   const maskStore = useMaskStore();
   const navigate = useNavigate();
@@ -53,52 +113,65 @@ export const NFTMedia = () => {
   }, [maskStore, nfts]);
 
   const address = useAddress();
+
+  const openModal = (nft: Record<string, any>, modalType: number) => {
+    setModalNFT(nft);
+    setModalType(modalType);
+  };
   return (
-    <div style={{ flex: 1 }}>
+    <div style={{ flex: 1, maxHeight: "100%", overflow: "auto" }}>
       {nfts &&
         nfts
           .filter((e) => e.ownerOf.toLowerCase() === address?.toLowerCase())
           .map((nft) => {
-            const { img, attributes } = JSON.parse(nft.metadata);
+            const nftJson = JSON.parse(nft.metadata);
+            const { name, description, image, attributes } = nftJson;
             return (
-              <div className={styles["nft-card"]} key={img}>
-                <Image
-                  src={img}
-                  alt="NFT"
-                  className={styles["nft-image"]}
-                  width={240}
-                  height={240}
-                />
+              <div className={styles["nft-card"]} key={image}>
+                <div
+                  style={{
+                    width: "240px",
+                    height: "240px",
+                    overflow: "hidden",
+                  }}
+                >
+                  <img
+                    src={image}
+                    alt="NFT"
+                    className={styles["nft-image"]}
+                    onClick={() => openModal(nftJson, 1)}
+                  />
+                </div>
                 <div
                   className={
                     isMobileScreen
                       ? styles["nft-card-right-mobile"]
                       : styles["nft-card-right"]
                   }
+                  onClick={() => openModal(nftJson, 2)}
                 >
                   <div className={styles["nft-attributes-container"]}>
-                    <div className={styles["nft-attributes"]}>
-                      {attributes.map((attribute: any, index: number) => (
-                        <div key={index} className={styles["nft-attribute"]}>
-                          <span className={styles["nft-attribute-label"]}>
-                            {attribute.trait_type}:
-                          </span>
-                          <span className={styles["nft-attribute-value"]}>
-                            {attribute.value}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+                    <div className={styles["nft-name"]}>{name}</div>
+                    <div>{description}</div>
                   </div>
                   <IconButton
                     icon={<ChatIcon />}
                     text="Chat"
-                    onClick={() => startChat(img)}
+                    onClick={() => startChat(image)}
                   />
                 </div>
               </div>
             );
           })}
+
+      {modalNFT && (
+        <NftModal
+          modalType={modalType}
+          isMobileScreen={isMobileScreen}
+          nft={modalNFT}
+          onClose={() => setModalNFT(undefined)}
+        />
+      )}
     </div>
   );
 };

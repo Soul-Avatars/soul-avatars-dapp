@@ -10,12 +10,16 @@
 }
 
 .nft-image {
-  height: 100%;
   border-radius: 8px 0 0 8px;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  object-position: center;
 }
 
 .nft-card-right {
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: flex-end;
   justify-content: space-between;
@@ -24,6 +28,7 @@
 
 .nft-card-right-mobile {
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: flex-start;
   justify-content: space-between;
@@ -32,6 +37,12 @@
   .nft-chat-button {
     margin-top: 8px;
   }
+}
+
+.nft-name {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
 }
 
 .nft-attributes-container {

@@ -130,10 +130,10 @@ export function NewChat() {
 
       <div className={styles["actions"]}>
         <IconButton
-          text={Locale.NewChat.More}
+          text="Find more on OpenSea"
           onClick={() =>
             window.open(
-              "https://testnets.opensea.io/collection/aigirl-3",
+              "https://testnets.opensea.io/collection/soulavatars",
               "_blank",
             )
           }
@@ -144,20 +144,6 @@ export function NewChat() {
       </div>
 
       <NFTMedia />
-
-      {/* <div className={styles["masks"]} ref={maskRef}>
-        {groups.map((masks, i) => (
-          <div key={i} className={styles["mask-row"]}>
-            {masks.map((mask, index) => (
-              <MaskItem
-                key={index}
-                mask={mask}
-                onClick={() => startChat(mask)}
-              />
-            ))}
-          </div>
-        ))}
-      </div> */}
     </div>
   );
 }

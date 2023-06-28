@@ -2,7 +2,7 @@ import { prettyObject } from "@/app/utils/format";
 import { NextRequest, NextResponse } from "next/server";
 
 const chain_id_goerli = 5;
-const nft_contract_address = "0x619DC42967E6220A5762ee2554eD2E57d8515A98";
+const nft_contract_address = "0x96FCa6B25B01C8baB624c460490b3f018886018E";
 
 let lastFetchTime = new Date().getTime();
 let lastFetchData: any = null;
