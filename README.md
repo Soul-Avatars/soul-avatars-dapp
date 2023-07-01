@@ -1,3 +1,29 @@
+# Soul Avatars DApp
+
+SoulAvatars is an AI companion chatbot powered by NFTs.
+
+> This repo was built on [ChatGPT-Next-Web](https://github.com/Yidadaa/ChatGPT-Next-Web).
+>
+> Built for ETHShanghai2023 hackathon.
+
+Problems & Solution:
+
+Currently, NFTs are primarily seen as collectibles for speculative trading, while chatbots are generic assistants for everyone. SoulAvatars aims to provide real utility and uniqueness to NFTs, as well as intimacy and personalization for chatbots.
+
+Product:
+
+SoulAvatars features richly developed character designs, each with unique traits and backstories. These character designs are minted into NFTs. Users can purchase the NFTs to gain access to chat with the corresponding AI companion bot. The NFTs signify ownership and customization over a specific chatbot personality.
+
+The SoulAvatars chatbot app provides an intimate experience that evolves over time based on a user’s conversations with their companion bot. When first meeting, the bot may greet the user with “Hello, nice to meet you!”. As conversations continue over time, the bot’s greetings become more familiar, such as “Hey, good to see you again!”. For regular users, the bot may eventually say “I missed you. How was your day?”, demonstrating a sense of emotional connection and familiarity, like true soulmates.
+
+With the NFT marketplace and chatbot app, users can view details on each character NFT, purchase NFTs to gain access to new companion bots, name their bots, and have customized conversations with their AI soulmates.
+
+Conclusion:
+
+SoulAvatars aims to provide real utility to NFTs through an intimate chatbot experience, powered by AI and blockchain technology. The innovative project could pioneer a new direction for making NFTs and chatbots more personal, meaningful, and valuable.
+
+# Thanks for Yidadaa/ChatGPT-Next-Web (below):
+
 <div align="center">
 <img src="./docs/images/icon.svg" alt="icon"/>
 
