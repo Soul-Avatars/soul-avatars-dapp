@@ -28,6 +28,7 @@ import { SideBar } from "./sidebar";
 import { useAppConfig } from "../store/config";
 import { AuthPage } from "./auth";
 import { getClientConfig } from "../config/client";
+import LandingPage from "./landing/landing";
 
 // This is the chainId your dApp will work on.
 const activeChain = "goerli";
@@ -114,6 +115,7 @@ const loadAsyncGoogleFont = () => {
 function Screen() {
   const config = useAppConfig();
   const location = useLocation();
+  const isLanding = location.pathname === Path.Landing;
   const isHome = location.pathname === Path.Home;
   const isAuth = location.pathname === Path.Auth;
   const isMobileScreen = useMobileScreen();
@@ -122,9 +124,12 @@ function Screen() {
     loadAsyncGoogleFont();
   }, []);
 
-  return (
+  return isLanding ? (
+    <LandingPage />
+  ) : (
     <ThirdwebProvider
       activeChain={activeChain}
+      clientId={"ec6d15172173e407ff8621d541c1063f"}
       dAppMeta={{
         name: "Soul Avatars",
         description: "AI Companion with NFTs",

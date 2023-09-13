@@ -7,7 +7,7 @@ import { IconButton } from "./button";
 import { AuthButton } from "./auth-button";
 import SettingsIcon from "../icons/settings.svg";
 import CloseIcon from "../icons/close.svg";
-import MaskIcon from "../icons/mask.svg";
+import stylesLanding from "./landing/landing.module.scss";
 
 import Locale from "../locales";
 
@@ -131,6 +131,26 @@ export function SideBar(props: { className?: string }) {
         }}
       >
         {!address ? "" : <ChatList narrow={shouldNarrow} />}
+
+        {!address ? (
+          ""
+        ) : (
+          <div className={stylesLanding.startButton}>
+            <button
+              style={{ width: "100%", marginTop: 16 }}
+              onClick={() => {
+                if (config.dontShowMaskSplashScreen) {
+                  chatStore.newSession();
+                  navigate(Path.Chat);
+                } else {
+                  navigate(Path.NewChat);
+                }
+              }}
+            >
+              💬 {Locale.Home.NewChat}
+            </button>
+          </div>
+        )}
       </div>
 
       <div className={styles["sidebar-tail"]}>
@@ -151,7 +171,7 @@ export function SideBar(props: { className?: string }) {
             </Link>
           </div>
         </div>
-        <div>
+        {/* <div>
           {!address ? (
             ""
           ) : (
@@ -169,7 +189,7 @@ export function SideBar(props: { className?: string }) {
               shadow
             />
           )}
-        </div>
+        </div> */}
       </div>
 
       <div

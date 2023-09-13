@@ -6,7 +6,7 @@ import { trimTopic } from "../utils";
 import Locale, { getLang } from "../locales";
 import { showToast } from "../components/ui-lib";
 import { ModelConfig, ModelType, useAppConfig } from "./config";
-import { createEmptyMask, Mask } from "./mask";
+import { Mask } from "./mask";
 import {
   DEFAULT_INPUT_TEMPLATE,
   DEFAULT_SYSTEM_TEMPLATE,
@@ -16,7 +16,7 @@ import { api, RequestMessage } from "../client/api";
 import { ChatControllerPool } from "../client/controller";
 import { prettyObject } from "../utils/format";
 import { estimateTokenLength } from "../utils/token";
-import { generateNFTMask } from "../masks/nft";
+import { generateNFTMask, reHintSysMsg } from "../masks/nft";
 import { NFT } from "../typing";
 
 export type ChatMessage = RequestMessage & {
@@ -25,6 +25,7 @@ export type ChatMessage = RequestMessage & {
   isError?: boolean;
   id?: number;
   model?: ModelType;
+  audio?: string;
 };
 
 export function createMessage(override: Partial<ChatMessage>): ChatMessage {
@@ -63,10 +64,17 @@ export const BOT_HELLO: ChatMessage = createMessage({
   content: Locale.Store.BotHello,
 });
 
+export const DETAULT_NFT_LING = {
+  id: 25,
+  name: "Ava",
+  metadata:
+    '{"id":"25","name":"Ava","description":"Ava is a skilled lawyer who fights for justice and upholds the law. She is intelligent, persuasive, and uses her legal expertise to make a positive impact in society.","image":"https://ipfs.io/ipfs/QmbN8zVYn3dhAT6vJJQGBFWvK1GgMWKF6HQExo2qyjWXXG","attributes":[{"trait_type":"gender","value":"girl"},{"trait_type":"birthday","value":"Jun 09"},{"trait_type":"constellation","value":"gemini"},{"trait_type":"personality","value":"curious,witty,inconsistent"},{"trait_type":"speaking style","value":"intellectual and curious"},{"trait_type":"role","value":"lawyer"},{"trait_type":"hair","value":"blonde"},{"trait_type":"clothing","value":"professional attire"},{"trait_type":"hobbies","value":"debating"}]}',
+};
+
 function createEmptySession(): ChatSession {
   return {
     id: Date.now() + Math.random(),
-    topic: "Ling",
+    topic: "Ava",
     memoryPrompt: "",
     messages: [],
     stat: {
@@ -77,16 +85,7 @@ function createEmptySession(): ChatSession {
     lastUpdate: Date.now(),
     lastSummarizeIndex: 0,
 
-    mask: generateNFTMask(
-      0,
-      {
-        id: 1,
-        name: "Ling",
-        metadata:
-          '{"image":"/logo.jpeg","attributes":[{"trait_type":"Role","value":"Customer Service of SoulAvatars"},{"trait_type":"Personality","value":"Friendly"},{"trait_type":"Clothing","value":"Maid Outfit"},{"trait_type":"Hobbies","value":"Dancing"}]}',
-      } as NFT,
-      1,
-    ),
+    mask: generateNFTMask(0, DETAULT_NFT_LING as NFT, 1),
   };
 }
 
@@ -310,7 +309,17 @@ export const useChatStore = create<ChatStore>()(
 
         // get recent messages
         const recentMessages = get().getMessagesWithMemory();
-        const sendMessages = recentMessages.concat(userMessage);
+        // const sendMessages = recentMessages.concat(userMessage);
+        const sendMessages =
+          recentMessages.length > 0
+            ? recentMessages.concat(
+                createMessage({
+                  role: "system",
+                  content: reHintSysMsg,
+                }),
+                userMessage,
+              )
+            : [userMessage];
         const sessionIndex = get().currentSessionIndex;
         const messageIndex = get().currentSession().messages.length + 1;
 
@@ -339,11 +348,23 @@ export const useChatStore = create<ChatStore>()(
               session.messages = session.messages.concat();
             });
           },
-          onFinish(message) {
+          onFinish(message, isError) {
             botMessage.streaming = false;
+            botMessage.isError = isError;
             if (message) {
               botMessage.content = message;
-              get().onNewMessage(botMessage);
+              if (!isError) {
+                fetchAudio(session.mask.name, message)
+                  .then((res) => {
+                    botMessage.audio = res.audioBase64;
+                  })
+                  .catch((err) => {
+                    console.log("fetch tts failed.", err);
+                  })
+                  .finally(() => {
+                    get().onNewMessage(botMessage);
+                  });
+              }
             }
             ChatControllerPool.remove(
               sessionIndex,
@@ -522,7 +543,7 @@ export const useChatStore = create<ChatStore>()(
             config: {
               model: "gpt-3.5-turbo",
             },
-            onFinish(message) {
+            onFinish(message, isError) {
               get().updateCurrentSession(
                 (session) =>
                   (session.topic =
@@ -576,7 +597,7 @@ export const useChatStore = create<ChatStore>()(
             onUpdate(message) {
               session.memoryPrompt = message;
             },
-            onFinish(message) {
+            onFinish(message, isError) {
               console.log("[Memory] ", message);
               session.lastSummarizeIndex = lastSummarizeIndex;
             },
@@ -634,3 +655,22 @@ export const useChatStore = create<ChatStore>()(
     },
   ),
 );
+
+async function fetchAudio(botName: string, text: string) {
+  const res = await fetch("/api/tts", {
+    method: "POST",
+    body: JSON.stringify({ name: botName, text: removeEmojis(text) }),
+  });
+  return await res.json();
+}
+
+function removeEmojis(chatMessage: string): string {
+  // Regular expression to match emojis
+  const emojiRegex =
+    /[\u{1F600}-\u{1F64F}|\u{1F300}-\u{1F5FF}|\u{1F680}-\u{1F6FF}|\u{1F900}-\u{1F9FF}|\u{2600}-\u{26FF}|\u{2700}-\u{27BF}|\u{20D0}-\u{20FF}|\u{FE00}-\u{FE0F}|\u{1F1E6}-\u{1F1FF}|\u{1F191}-\u{1F251}|\u{1F004}|\u{1F0CF}|\u{1F170}-\u{1F171}|\u{1F17E}-\u{1F17F}|\u{1F18E}|\u{3030}|\u{2B50}|\u{2B55}|\u{2934}-\u{2935}|\u{2B05}-\u{2B07}|\u{2B1B}-\u{2B1C}|\u{3297}|\u{3299}|\u{303D}|\u{00A9}|\u{00AE}|\u{2122}|\u{23F3}|\u{24C2}|\u{23E9}-\u{23EF}|\u{25B6}|\u{23F8}-\u{23FA}]/gu;
+
+  // Remove emojis by replacing them with an empty string
+  const sanitizedMessage = chatMessage.replace(emojiRegex, "");
+
+  return sanitizedMessage;
+}

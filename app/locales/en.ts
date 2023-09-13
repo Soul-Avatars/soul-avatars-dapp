@@ -289,8 +289,8 @@ const en: LocaleType = {
   NewChat: {
     Return: "Return",
     Skip: "Just Start",
-    Title: "Pick a Bot",
-    SubTitle: "Chat with the Soul behind the Bot",
+    Title: "Pick an NFT",
+    SubTitle: "Chat with the Soul behind the NFT",
     More: "Find More",
     NotShow: "Never Show Again",
     ConfirmNoShow: "Confirm to disable？You can enable it in settings later.",

@@ -70,14 +70,14 @@ export class ChatGPTApi implements LLMApi {
         let responseText = "";
         let finished = false;
 
-        const finish = () => {
+        const finish = (isError: boolean) => {
           if (!finished) {
-            options.onFinish(responseText);
+            options.onFinish(responseText, isError);
             finished = true;
           }
         };
 
-        controller.signal.onabort = finish;
+        controller.signal.onabort = () => finish(true);
 
         fetchEventSource(chatPath, {
           ...chatPayload,
@@ -91,7 +91,7 @@ export class ChatGPTApi implements LLMApi {
 
             if (contentType?.startsWith("text/plain")) {
               responseText = await res.clone().text();
-              return finish();
+              return finish(false);
             }
 
             if (
@@ -118,12 +118,12 @@ export class ChatGPTApi implements LLMApi {
 
               responseText = responseTexts.join("\n\n");
 
-              return finish();
+              return finish(true);
             }
           },
           onmessage(msg) {
             if (msg.data === "[DONE]" || finished) {
-              return finish();
+              return finish(false);
             }
             const text = msg.data;
             try {
@@ -138,7 +138,7 @@ export class ChatGPTApi implements LLMApi {
             }
           },
           onclose() {
-            finish();
+            finish(true);
           },
           onerror(e) {
             options.onError?.(e);
@@ -152,7 +152,7 @@ export class ChatGPTApi implements LLMApi {
 
         const resJson = await res.json();
         const message = this.extractMessage(resJson);
-        options.onFinish(message);
+        options.onFinish(message, false);
       }
     } catch (e) {
       console.log("[Request] failed to make a chat reqeust", e);

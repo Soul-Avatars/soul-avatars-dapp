@@ -58,6 +58,7 @@ import { ChatCommandPrefix, useChatCommand, useCommand } from "../command";
 import { prettyObject } from "../utils/format";
 import { ExportMessageModal } from "./exporter";
 import { getClientConfig } from "../config/client";
+import AudioButton from "./audio/audio";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -802,6 +803,8 @@ export function Chat() {
 
           const shouldShowClearContextDivider = i === clearContextIndex - 1;
 
+          console.log("message", message.audio);
+          console.log("is", isUser);
           return (
             <>
               <div
@@ -824,6 +827,9 @@ export function Chat() {
                     </div>
                   )}
                   <div className={styles["chat-message-item"]}>
+                    {!isUser && message.audio && (
+                      <AudioButton audioBase64={message.audio} />
+                    )}
                     <Markdown
                       content={message.content}
                       loading={
