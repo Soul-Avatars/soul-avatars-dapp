@@ -2,21 +2,14 @@ import React from "react";
 import styles from "./landing.module.scss";
 import { useNavigate } from "react-router-dom";
 import { Path } from "@/app/constant";
-import FeatureCard from "./feature-card";
-import { useAccessStore } from "@/app/store";
 import ImageGrid from "./image-grid";
 
 const StartButton: React.FC = () => {
   const navigate = useNavigate();
-  const access = useAccessStore();
 
   return (
     <div className={styles.startButton}>
-      <button
-        onClick={() => navigate(access.isAuthorized() ? Path.Home : Path.Auth)}
-      >
-        Chat with NFT 💬
-      </button>
+      <button onClick={() => navigate(Path.Home)}>Chat with NFT 💬</button>
     </div>
   );
 };

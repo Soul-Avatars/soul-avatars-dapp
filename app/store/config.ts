@@ -17,6 +17,17 @@ export enum Theme {
   Light = "light",
 }
 
+export enum Gender {
+  Male = "male",
+  Female = "female",
+}
+
+export type NFTConfig = {
+  id: string;
+  name: string;
+  relationship: string;
+};
+
 export const DEFAULT_CONFIG = {
   submitKey: SubmitKey.CtrlEnter as SubmitKey,
   avatar: "1f603",
@@ -41,6 +52,15 @@ export const DEFAULT_CONFIG = {
     compressMessageLengthThreshold: 1000,
     template: DEFAULT_INPUT_TEMPLATE,
   },
+
+  userProfile: {
+    avatar: "1f603",
+    name: "Friend",
+    gender: "Male" as Gender,
+  },
+  isUserProfileSet: false,
+
+  nftConfig: {} as Record<string, NFTConfig>,
 };
 
 export type ChatConfig = typeof DEFAULT_CONFIG;
@@ -51,6 +71,7 @@ export type ChatConfigStore = ChatConfig & {
 };
 
 export type ModelConfig = ChatConfig["modelConfig"];
+export type ProfileConfig = ChatConfig["userProfile"];
 
 const ENABLE_GPT4 = true;
 

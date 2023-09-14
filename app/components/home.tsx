@@ -7,7 +7,6 @@ import { ThirdwebProvider } from "@thirdweb-dev/react";
 
 import styles from "./home.module.scss";
 
-import BotIcon from "../icons/bot.svg";
 import LoadingIcon from "../icons/three-dots.svg";
 
 import { getCSSVar, useMobileScreen } from "../utils";
@@ -36,7 +35,9 @@ const activeChain = "goerli";
 export function Loading(props: { noLogo?: boolean }) {
   return (
     <div className={styles["loading-content"] + " no-dark"}>
-      {!props.noLogo && <BotIcon />}
+      {!props.noLogo && (
+        <img src="/logo.jpeg" width={48} className={styles["loading-icon"]} />
+      )}
       <LoadingIcon />
     </div>
   );
@@ -55,6 +56,10 @@ const NewChat = dynamic(async () => (await import("./new-chat")).NewChat, {
 });
 
 const MaskPage = dynamic(async () => (await import("./mask")).MaskPage, {
+  loading: () => <Loading noLogo />,
+});
+
+const Profile = dynamic(async () => (await import("./profile")).Profile, {
   loading: () => <Loading noLogo />,
 });
 
@@ -163,6 +168,7 @@ function Screen() {
                 <Route path={Path.Masks} element={<MaskPage />} />
                 <Route path={Path.Chat} element={<Chat />} />
                 <Route path={Path.Settings} element={<Settings />} />
+                <Route path={Path.Profile} element={<Profile />} />
               </Routes>
             </div>
           </>

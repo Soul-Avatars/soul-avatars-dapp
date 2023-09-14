@@ -111,10 +111,11 @@ export function Modal(props: ModalProps) {
     <div className={styles["modal-container"]}>
       <div className={styles["modal-header"]}>
         <div className={styles["modal-title"]}>{props.title}</div>
-
-        <div className={styles["modal-close-btn"]} onClick={props.onClose}>
-          <CloseIcon />
-        </div>
+        {props.onClose && (
+          <div className={styles["modal-close-btn"]} onClick={props.onClose}>
+            <CloseIcon />
+          </div>
+        )}
       </div>
 
       <div className={styles["modal-content"]}>{props.children}</div>

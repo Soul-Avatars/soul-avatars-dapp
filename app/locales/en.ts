@@ -109,6 +109,10 @@ const en: LocaleType = {
     DeleteToast: "Chat Deleted",
     Revert: "Revert",
   },
+  Profile: {
+    Title: "Profile",
+    SubTitle: "NFT Holder Profile",
+  },
   Settings: {
     Title: "Settings",
     SubTitle: "All Settings",

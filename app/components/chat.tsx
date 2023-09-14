@@ -16,7 +16,6 @@ import LoadingIcon from "../icons/three-dots.svg";
 import MaxIcon from "../icons/max.svg";
 import MinIcon from "../icons/min.svg";
 import ResetIcon from "../icons/reload.svg";
-import RenameIcon from "../icons/rename.svg";
 import BreakIcon from "../icons/break.svg";
 import SettingsIcon from "../icons/chat-settings.svg";
 
@@ -31,7 +30,6 @@ import {
   SubmitKey,
   useChatStore,
   createMessage,
-  useAccessStore,
   Theme,
   useAppConfig,
   DEFAULT_TOPIC,
@@ -54,11 +52,13 @@ import { LAST_INPUT_KEY, Path, REQUEST_TIMEOUT_MS } from "../constant";
 import { Avatar } from "./emoji";
 import { MaskAvatar, MaskConfig } from "./mask";
 import { useMaskStore } from "../store/mask";
-import { ChatCommandPrefix, useChatCommand, useCommand } from "../command";
+import { useChatCommand, useCommand } from "../command";
 import { prettyObject } from "../utils/format";
 import { ExportMessageModal } from "./exporter";
 import { getClientConfig } from "../config/client";
 import AudioButton from "./audio/audio";
+import { Profile } from "./profile";
+import { NftSetupModal } from "./nft/nft-media";
 
 const Markdown = dynamic(async () => (await import("./markdown")).Markdown, {
   loading: () => <LoadingIcon />,
@@ -455,6 +455,10 @@ export function Chat() {
   const isMobileScreen = useMobileScreen();
   const navigate = useNavigate();
 
+  const [showNftSetup, setShowNftSetup] = useState<
+    Record<string, any> | undefined
+  >();
+
   const onChatBodyScroll = (e: HTMLElement) => {
     const isTouchBottom = e.scrollTop + e.clientHeight >= e.scrollHeight - 10;
     setHitBottom(isTouchBottom);
@@ -715,6 +719,8 @@ export function Chat() {
   const autoFocus = !isMobileScreen || isChat; // only focus in chat page
   const showMaxIcon = !isMobileScreen && !clientConfig?.isApp;
 
+  const nftConfig = config.nftConfig[session.mask.avatar];
+
   useCommand({
     fill: setUserInput,
     submit: (text) => {
@@ -728,6 +734,10 @@ export function Chat() {
         Sign In with wallet to start chatting
       </div>
     );
+  }
+
+  if (!config.isUserProfileSet) {
+    return <Profile />;
   }
 
   return (
@@ -749,21 +759,18 @@ export function Chat() {
         <div className={`window-header-title ${styles["chat-body-title"]}`}>
           <div
             className={`window-header-main-title ${styles["chat-body-main-title"]}`}
-            onClickCapture={renameSession}
+            onClickCapture={() => {
+              setShowNftSetup({
+                image: session.mask.avatar,
+                name: session.mask.name,
+              });
+            }}
           >
-            {!session.topic ? DEFAULT_TOPIC : session.topic}
+            {nftConfig?.name ||
+              (!session.topic ? DEFAULT_TOPIC : session.topic)}
           </div>
         </div>
         <div className="window-actions">
-          {!isMobileScreen && (
-            <div className="window-action-button">
-              <IconButton
-                icon={<RenameIcon />}
-                bordered
-                onClick={renameSession}
-              />
-            </div>
-          )}
           {showMaxIcon && (
             <div className="window-action-button">
               <IconButton
@@ -803,8 +810,6 @@ export function Chat() {
 
           const shouldShowClearContextDivider = i === clearContextIndex - 1;
 
-          console.log("message", message.audio);
-          console.log("is", isUser);
           return (
             <>
               <div
@@ -885,6 +890,13 @@ export function Chat() {
 
       {showExport && (
         <ExportMessageModal onClose={() => setShowExport(false)} />
+      )}
+
+      {showNftSetup && (
+        <NftSetupModal
+          nft={showNftSetup}
+          onClose={() => setShowNftSetup(undefined)}
+        />
       )}
     </div>
   );

@@ -7,6 +7,7 @@ import { IconButton } from "./button";
 import { AuthButton } from "./auth-button";
 import SettingsIcon from "../icons/settings.svg";
 import CloseIcon from "../icons/close.svg";
+import MaskIcon from "../icons/mask.svg";
 import stylesLanding from "./landing/landing.module.scss";
 
 import Locale from "../locales";
@@ -104,6 +105,8 @@ export function SideBar(props: { className?: string }) {
   const navigate = useNavigate();
   const config = useAppConfig();
 
+  const chatAvailable = address && config.isUserProfileSet;
+
   useHotKey();
 
   return (
@@ -130,9 +133,9 @@ export function SideBar(props: { className?: string }) {
           }
         }}
       >
-        {!address ? "" : <ChatList narrow={shouldNarrow} />}
+        {!chatAvailable ? "" : <ChatList narrow={shouldNarrow} />}
 
-        {!address ? (
+        {!chatAvailable ? (
           ""
         ) : (
           <div className={stylesLanding.startButton}>
@@ -168,6 +171,11 @@ export function SideBar(props: { className?: string }) {
           <div className={styles["sidebar-action"]}>
             <Link to={Path.Settings}>
               <IconButton icon={<SettingsIcon />} shadow />
+            </Link>
+          </div>
+          <div className={styles["sidebar-action"]}>
+            <Link to={Path.Profile}>
+              <IconButton icon={<MaskIcon />} shadow />
             </Link>
           </div>
         </div>

@@ -1,15 +1,14 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 
 import styles from "./settings.module.scss";
 
-import ResetIcon from "../icons/reload.svg";
 import AddIcon from "../icons/add.svg";
 import CloseIcon from "../icons/close.svg";
 import CopyIcon from "../icons/copy.svg";
 import ClearIcon from "../icons/clear.svg";
 import EditIcon from "../icons/edit.svg";
 import EyeIcon from "../icons/eye.svg";
-import { Input, List, ListItem, Modal, Popover, Select } from "./ui-lib";
+import { Input, List, ListItem, Modal, Select } from "./ui-lib";
 
 import { IconButton } from "./button";
 import { SubmitKey, useChatStore, Theme, useAppConfig } from "../store";
@@ -21,12 +20,11 @@ import Locale, {
   getLang,
 } from "../locales";
 import { copyToClipboard } from "../utils";
-import { Path, UPDATE_URL } from "../constant";
+import { Path } from "../constant";
 import { Prompt, SearchService, usePromptStore } from "../store/prompt";
 import { ErrorBoundary } from "./error";
 import { InputRange } from "./input-range";
 import { useNavigate } from "react-router-dom";
-import { Avatar, AvatarPicker } from "./emoji";
 
 function EditPromptModal(props: { id: number; onClose: () => void }) {
   const promptStore = usePromptStore();
@@ -214,7 +212,7 @@ export function Settings() {
           </div>
         </div>
         <div className="window-actions">
-          <div className="window-action-button">
+          {/* <div className="window-action-button">
             <IconButton
               icon={<ClearIcon />}
               onClick={() => {
@@ -237,7 +235,7 @@ export function Settings() {
               bordered
               title={Locale.Settings.Actions.ResetAll}
             />
-          </div>
+          </div> */}
           <div className="window-action-button">
             <IconButton
               icon={<CloseIcon />}
@@ -250,7 +248,7 @@ export function Settings() {
       </div>
       <div className={styles["settings"]}>
         <List>
-          <ListItem title={Locale.Settings.Avatar}>
+          {/* <ListItem title={Locale.Settings.Avatar}>
             <Popover
               onClose={() => setShowEmojiPicker(false)}
               content={
@@ -270,7 +268,7 @@ export function Settings() {
                 <Avatar avatar={config.avatar} />
               </div>
             </Popover>
-          </ListItem>
+          </ListItem> */}
 
           <ListItem title={Locale.Settings.SendKey}>
             <Select

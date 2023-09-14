@@ -1,17 +1,17 @@
 import { useState, useEffect } from "react";
 import { useAddress } from "@thirdweb-dev/react";
-import Image from "next/image";
 import styles from "./nft-media.module.scss";
 import { IconButton } from "../button";
 import ChatIcon from "../../icons/chat.svg";
+import RenameIcon from "../../icons/rename.svg";
 import { Path } from "../../constant";
 import { useMaskStore } from "../../store/mask";
 import { useNavigate } from "react-router-dom";
-import { useChatStore } from "../../store";
+import { useAppConfig, useChatStore } from "../../store";
 import { generateNFTMask } from "../../masks/nft";
 import { NFT } from "@/app/typing";
 import { useMobileScreen } from "@/app/utils";
-import { Modal } from "../ui-lib";
+import { List, ListItem, Modal } from "../ui-lib";
 
 function NftModal(props: {
   modalType: number;
@@ -73,25 +73,25 @@ export const NFTMedia = () => {
   const [nfts, setNfts] = useState<NFT[] | undefined>(undefined);
   const [modalType, setModalType] = useState<number>(1); // 1: show left, 2: show right.
   const [modalNFT, setModalNFT] = useState<Record<string, any> | undefined>();
+  const [showNftSetup, setShowNftSetup] = useState<
+    Record<string, any> | undefined
+  >();
 
   const chatStore = useChatStore();
   const maskStore = useMaskStore();
   const navigate = useNavigate();
   const isMobileScreen = useMobileScreen();
 
-  const startChat = (id: string) => {
+  const startChat = (nftJson: Record<string, any>) => {
     const existChatIndex = chatStore.sessions.findIndex(
-      (session) => session.mask.avatar === id,
+      (session) => session.mask.avatar === nftJson.image,
     );
     if (existChatIndex > -1) {
       chatStore.selectSession(existChatIndex);
       setTimeout(() => navigate(Path.Chat), 1);
-      return;
+    } else {
+      setShowNftSetup(nftJson);
     }
-
-    const nftMask = maskStore.getAll().find((e) => e.avatar === id);
-    chatStore.newSession(nftMask || undefined);
-    setTimeout(() => navigate(Path.Chat), 1);
   };
 
   useEffect(() => {
@@ -157,7 +157,10 @@ export const NFTMedia = () => {
                   <IconButton
                     icon={<ChatIcon />}
                     text="Chat"
-                    onClick={() => startChat(image)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      startChat(nftJson);
+                    }}
                   />
                 </div>
               </div>
@@ -172,6 +175,123 @@ export const NFTMedia = () => {
           onClose={() => setModalNFT(undefined)}
         />
       )}
+
+      {showNftSetup && (
+        <NftSetupModal
+          nft={showNftSetup}
+          onClose={() => setShowNftSetup(undefined)}
+        />
+      )}
     </div>
   );
 };
+
+export function NftSetupModal(props: {
+  nft: Record<string, any>;
+  onClose: () => void;
+}) {
+  const config = useAppConfig();
+  const updateConfig = config.update;
+
+  const chatStore = useChatStore();
+  const maskStore = useMaskStore();
+  const navigate = useNavigate();
+
+  const doStartChat = (nftJson: Record<string, any>) => {
+    const nftMask = maskStore.getAll().find((e) => e.avatar === nftJson.image);
+    chatStore.newSession(nftMask || undefined);
+    setTimeout(() => navigate(Path.Chat), 1);
+  };
+
+  const nftId = props.nft.image;
+  const defaultRelationship = "Romantic partner";
+  return (
+    <div className="modal-mask">
+      <Modal
+        title={"Setup Chatbot"}
+        onClose={() => props.onClose()}
+        actions={[
+          <IconButton
+            key={1}
+            bordered
+            text="Okay !"
+            onClick={() => {
+              if (!config.nftConfig[nftId]) {
+                if (props.nft.name) {
+                  updateConfig((config) => {
+                    const nftConfig = { ...config.nftConfig };
+                    nftConfig[nftId] = {
+                      id: nftId,
+                      name: props.nft.name,
+                      relationship: defaultRelationship,
+                    };
+                    config.nftConfig = nftConfig;
+                  });
+                  doStartChat(props.nft);
+                }
+              } else {
+                doStartChat(props.nft);
+              }
+            }}
+          ></IconButton>,
+        ]}
+      >
+        <div className={styles["settings"]}>
+          <List>
+            <ListItem title="Name" subTitle="Give your NFT a name">
+              <div
+                onClickCapture={() => {
+                  const newName = prompt("NFT Name", props.nft.name);
+                  if (newName) {
+                    updateConfig((config) => {
+                      if (config.nftConfig[nftId]) {
+                        config.nftConfig[nftId].name = newName;
+                      } else {
+                        config.nftConfig[nftId] = {
+                          id: nftId,
+                          name: newName,
+                          relationship: defaultRelationship,
+                        };
+                      }
+                    });
+                  }
+                }}
+              >
+                {(config.nftConfig[nftId] || {}).name || props.nft.name}{" "}
+                <RenameIcon />
+              </div>
+            </ListItem>
+
+            <ListItem
+              title="Relationship"
+              subTitle="Set your desired relationship with NFT"
+            >
+              <div
+                onClickCapture={() => {
+                  const input = prompt("Relationship", defaultRelationship);
+                  if (input) {
+                    updateConfig((config) => {
+                      if (config.nftConfig[nftId]) {
+                        config.nftConfig[nftId].relationship = input;
+                      } else {
+                        config.nftConfig[nftId] = {
+                          id: nftId,
+                          name: props.nft.name,
+                          relationship: defaultRelationship,
+                        };
+                      }
+                    });
+                  }
+                }}
+              >
+                {(config.nftConfig[nftId] || {}).relationship ||
+                  defaultRelationship}{" "}
+                <RenameIcon />
+              </div>
+            </ListItem>
+          </List>
+        </div>
+      </Modal>
+    </div>
+  );
+}

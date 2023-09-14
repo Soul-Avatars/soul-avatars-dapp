@@ -107,6 +107,10 @@ const cn = {
     DeleteToast: "已删除会话",
     Revert: "撤销",
   },
+  Profile: {
+    Title: "个人资料",
+    SubTitle: "NFT 持有者资料设置",
+  },
   Settings: {
     Title: "设置",
     SubTitle: "设置选项",
