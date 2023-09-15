@@ -1,20 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import { Path, SlotID } from "../constant";
+import { ChainName, Path, SlotID } from "../constant";
 import { IconButton } from "./button";
-import { EmojiAvatar } from "./emoji";
 import styles from "./new-chat.module.scss";
 
 import LeftIcon from "../icons/left.svg";
-import LightningIcon from "../icons/lightning.svg";
+import AddIcon from "../icons/add.svg";
 import EyeIcon from "../icons/eye.svg";
+import SearchIcon from "../icons/search.svg";
 
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Mask, useMaskStore } from "../store/mask";
 import Locale from "../locales";
-import { useAppConfig, useChatStore } from "../store";
+import { useChatStore } from "../store";
 import { MaskAvatar } from "./mask";
 import { useCommand } from "../command";
 import { NFTMedia } from "./nft/nft-media";
+import { Modal, Select } from "./ui-lib";
 
 function getIntersectionArea(aRect: DOMRect, bRect: DOMRect) {
   const xmin = Math.max(aRect.x, bRect.x);
@@ -86,11 +87,10 @@ export function NewChat() {
   const groups = useMaskGroup(masks);
 
   const navigate = useNavigate();
-  const config = useAppConfig();
 
   const maskRef = useRef<HTMLDivElement>(null);
 
-  const { state } = useLocation();
+  const [showAddNFT, setShowAddNFT] = useState(false);
 
   const startChat = (mask?: Mask) => {
     chatStore.newSession(mask);
@@ -123,6 +123,13 @@ export function NewChat() {
           text={Locale.NewChat.Return}
           onClick={() => navigate(Path.Home)}
         ></IconButton>
+
+        <IconButton
+          icon={<AddIcon />}
+          text="Add NFT"
+          bordered
+          onClick={() => setShowAddNFT(true)}
+        ></IconButton>
       </div>
 
       <div className={styles["title"]}>{Locale.NewChat.Title}</div>
@@ -144,6 +151,63 @@ export function NewChat() {
       </div>
 
       <NFTMedia />
+
+      {showAddNFT && <AddNFTModal onClose={() => setShowAddNFT(false)} />}
+    </div>
+  );
+}
+
+function AddNFTModal(props: { onClose: () => void }) {
+  const [chainName, setChainName] = useState("goerli");
+
+  return (
+    <div className="modal-mask">
+      <Modal
+        title={"Add NFT"}
+        onClose={() => props.onClose()}
+        actions={[
+          <IconButton
+            key={1}
+            bordered
+            text="Okay !"
+            onClick={() => props.onClose()}
+          ></IconButton>,
+        ]}
+      >
+        <div className={styles["add-nft-row"]}>
+          <span style={{ marginRight: 8 }}>Network </span>
+
+          <Select
+            value={chainName}
+            onChange={(e) => {
+              setChainName(e.target.value as any);
+            }}
+          >
+            {Object.values(ChainName).map((chain) => (
+              <option value={chain} key={chain}>
+                {chain}
+              </option>
+            ))}
+          </Select>
+
+          <span style={{ flex: 1 }}></span>
+          <input
+            type="text"
+            // value={prompt.title}
+            // readOnly={!prompt.isUser}
+            className={styles["contract-search"]}
+            placeholder="Contract Address"
+            // onInput={(e) =>
+            //   promptStore.update(
+            //     props.id,
+            //     (prompt) => (prompt.title = e.currentTarget.value),
+            //   )
+            // }
+          ></input>
+
+          <IconButton icon={<SearchIcon />} bordered />
+        </div>
+      </Modal>
     </div>
   );
 }

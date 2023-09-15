@@ -61,3 +61,9 @@ You are ChatGPT, a large language model trained by OpenAI.
 Knowledge cutoff: 2021-09
 Current model: {{model}}
 Current time: {{time}}`;
+
+export enum ChainName {
+  Goerli = "Goerli",
+  Ethereum = "Ethereum",
+  Arbitrum = "Arbitrum",
+}
