@@ -36,7 +36,7 @@ export const generateNFTMask = (
     .map((e: any) => `${e.trait_type}:${e.value}`)
     .join(",");
   const promptTemplate = `${reHintSysMsg}
-5. with the Role design: [${roleDescription},Relationship:${relation}].
+5. with the Role design: [${roleDescription}], your relationship: romantic partner.
 `;
   return {
     id: metadataJson.id,

@@ -12,6 +12,7 @@ import { generateNFTMask } from "../../masks/nft";
 import { NFT } from "@/app/typing";
 import { useMobileScreen } from "@/app/utils";
 import { List, ListItem, Modal } from "../ui-lib";
+import stylesLib from "../ui-lib.module.scss";
 
 function NftModal(props: {
   modalType: number;
@@ -237,6 +238,7 @@ export function NftSetupModal(props: {
         ]}
       >
         <div className={styles["settings"]}>
+          <span>Basic</span>
           <List>
             <ListItem title="Name" subTitle="Give your NFT a name">
               <div
@@ -290,6 +292,22 @@ export function NftSetupModal(props: {
               </div>
             </ListItem>
           </List>
+
+          <span>Tags</span>
+          <div className={stylesLib.list} style={{ padding: 16 }}>
+            <div className={styles["nft-attributes"]}>
+              {props.nft.attributes?.map((attribute: any, index: number) => (
+                <div key={index} className={styles["nft-attribute"]}>
+                  <span className={styles["nft-attribute-label"]}>
+                    {attribute.trait_type}:
+                  </span>
+                  <span className={styles["nft-attribute-value"]}>
+                    {attribute.value}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </Modal>
     </div>
