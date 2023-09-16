@@ -4,14 +4,14 @@ import styles from "./nft-media.module.scss";
 import { IconButton } from "../button";
 import ChatIcon from "../../icons/chat.svg";
 import RenameIcon from "../../icons/rename.svg";
-import { Path } from "../../constant";
+import { Path, allVoices } from "../../constant";
 import { useMaskStore } from "../../store/mask";
 import { useNavigate } from "react-router-dom";
 import { useAppConfig, useChatStore } from "../../store";
 import { generateNFTMask } from "../../masks/nft";
 import { NFT } from "@/app/typing";
 import { useMobileScreen } from "@/app/utils";
-import { List, ListItem, Modal } from "../ui-lib";
+import { List, ListItem, Modal, Select } from "../ui-lib";
 import stylesLib from "../ui-lib.module.scss";
 
 function NftModal(props: {
@@ -187,6 +187,8 @@ export const NFTMedia = () => {
   );
 };
 
+const audio = new Audio();
+
 export function NftSetupModal(props: {
   nft: Record<string, any>;
   onClose: () => void;
@@ -204,6 +206,13 @@ export function NftSetupModal(props: {
     setTimeout(() => navigate(Path.Chat), 1);
   };
 
+  function playSelectedVoice(voice: string) {
+    audio.src = `/voices/${voice}.wav`;
+
+    audio.pause();
+    audio.play();
+  }
+
   const nftId = props.nft.image;
   const defaultRelationship = "Romantic partner";
   return (
@@ -220,13 +229,12 @@ export function NftSetupModal(props: {
               if (!config.nftConfig[nftId]) {
                 if (props.nft.name) {
                   updateConfig((config) => {
-                    const nftConfig = { ...config.nftConfig };
-                    nftConfig[nftId] = {
+                    config.nftConfig[nftId] = {
                       id: nftId,
                       name: props.nft.name,
                       relationship: defaultRelationship,
+                      voice: Object.values(allVoices)[0],
                     };
-                    config.nftConfig = nftConfig;
                   });
                   doStartChat(props.nft);
                 }
@@ -253,6 +261,7 @@ export function NftSetupModal(props: {
                           id: nftId,
                           name: newName,
                           relationship: defaultRelationship,
+                          voice: Object.values(allVoices)[0],
                         };
                       }
                     });
@@ -279,7 +288,8 @@ export function NftSetupModal(props: {
                         config.nftConfig[nftId] = {
                           id: nftId,
                           name: props.nft.name,
-                          relationship: defaultRelationship,
+                          relationship: input,
+                          voice: Object.values(allVoices)[0],
                         };
                       }
                     });
@@ -290,6 +300,36 @@ export function NftSetupModal(props: {
                   defaultRelationship}{" "}
                 <RenameIcon />
               </div>
+            </ListItem>
+
+            <ListItem title="Voice" subTitle="How your NFT sounds like">
+              <Select
+                value={
+                  config.nftConfig[nftId]?.voice || Object.values(allVoices)[0]
+                }
+                onChange={(e) => {
+                  updateConfig((config) => {
+                    if (config.nftConfig[nftId]) {
+                      config.nftConfig[nftId].voice = e.target.value;
+                    } else {
+                      config.nftConfig[nftId] = {
+                        id: nftId,
+                        name: props.nft.name,
+                        relationship: defaultRelationship,
+                        voice: e.target.value,
+                      };
+                    }
+                  });
+
+                  playSelectedVoice(e.target.value);
+                }}
+              >
+                {Object.keys(allVoices).map((v) => (
+                  <option value={allVoices[v]} key={v}>
+                    {v}
+                  </option>
+                ))}
+              </Select>
             </ListItem>
           </List>
 

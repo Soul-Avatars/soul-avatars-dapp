@@ -67,3 +67,27 @@ export enum ChainName {
   Ethereum = "Ethereum",
   Arbitrum = "Arbitrum",
 }
+
+export const allVoices: Record<string, string> = {
+  Xiaochen: "zh-CN-XiaochenNeural (Female)",
+  Xiaohan: "zh-CN-XiaohanNeural (Female)",
+  Xiaomeng: "zh-CN-XiaomengNeural (Female)",
+  Xiaomo: "zh-CN-XiaomoNeural (Female)",
+  Xiaoqiu: "zh-CN-XiaoqiuNeural (Female)",
+  Xiaorui: "zh-CN-XiaoruiNeural (Female)",
+  Xiaoshuang: "zh-CN-XiaoshuangNeural (Female, Child)",
+  Xiaoxiao: "zh-CN-XiaoxiaoNeural (Female)",
+  Xiaoxuan: "zh-CN-XiaoxuanNeural (Female)",
+  Xiaoyuan: "zh-CN-XiaoyuanNeural (Female)",
+  Xiaoyi: "zh-CN-XiaoyiNeural (Female)",
+  Xiaoyou: "zh-CN-XiaoyouNeural (Female, Child)",
+  Xiaozhen: "zh-CN-XiaozhenNeural (Female)",
+  Yunfeng: "zh-CN-YunfengNeural (Male)",
+  Yunhao: "zh-CN-YunhaoNeural (Male)",
+  Yunjian: "zh-CN-YunjianNeural (Male)",
+  Yunxia: "zh-CN-YunxiaNeural (Male)",
+  Yunxi: "zh-CN-YunxiNeural (Male)",
+  Yunyang: "zh-CN-YunyangNeural (Male)",
+  Yunye: "zh-CN-YunyeNeural (Male)",
+  Yunze: "zh-CN-YunzeNeural (Male)",
+};

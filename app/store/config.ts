@@ -26,6 +26,7 @@ export type NFTConfig = {
   id: string;
   name: string;
   relationship: string;
+  voice: string;
 };
 
 export const DEFAULT_CONFIG = {
