@@ -173,11 +173,13 @@ export function SideBar(props: { className?: string }) {
               <IconButton icon={<SettingsIcon />} shadow />
             </Link>
           </div>
-          <div className={styles["sidebar-action"]}>
-            <Link to={Path.Profile}>
-              <IconButton icon={<MaskIcon />} shadow />
-            </Link>
-          </div>
+          {chatAvailable && (
+            <div className={styles["sidebar-action"]}>
+              <Link to={Path.Profile}>
+                <IconButton icon={<MaskIcon />} shadow />
+              </Link>
+            </div>
+          )}
         </div>
         {/* <div>
           {!address ? (
