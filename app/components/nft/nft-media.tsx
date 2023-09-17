@@ -123,7 +123,7 @@ export const NFTMedia = () => {
     <div style={{ flex: 1, maxHeight: "100%", overflow: "auto" }}>
       {nfts &&
         nfts
-          .filter((e) => e.ownerOf.toLowerCase() === address?.toLowerCase())
+          // .filter((e) => e.ownerOf.toLowerCase() === address?.toLowerCase())
           .map((nft) => {
             const nftJson = JSON.parse(nft.metadata);
             const { name, description, image, attributes } = nftJson;
